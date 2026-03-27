@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<body>
+
+<div th:fragment="productTable">
+
+    <table>
+        <thead>
+        <tr>
+            <th>#</th>
+            <th th:text="#{title}"/>
+            <th th:text="#{vendor}"/>
+            <th th:text="#{type}"/>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="p, stat : ${products}"
+            th:attr="hx-get=@{/products/{id}/variants(id=${p.id})}"
+            hx-target="#dialog-body"
+            hx-swap="innerHTML"
+            hx-on:htmx:after:request="openDialog()">
+
+            <td th:text="${stat.count}"></td>
+            <td th:text="${p.title}"></td>
+            <td th:text="${p.vendor}"></td>
+            <td th:text="${p.productType}"></td>
+        </tr>
+        </tbody>
+
+    </table>
+
+</div>
+
+<div th:fragment="variantDialogContent">
+
+    <div th:if="${#lists.isEmpty(variants)}">
+        <p style="text-align:center; padding:20px;">
+            <span th:text="#{noVariantMessage}"></span>
+        </p>
+    </div>
+
+    <table th:if="${!#lists.isEmpty(variants)}">
+        <thead>
+        <tr>
+            <th th:text="#{title}"/>
+            <th th:text="#{option1}"/>
+            <th th:text="#{option2}"/>
+            <th th:text="#{option3}"/>
+            <th th:text="#{available}"/>
+            <th th:text="#{price}"/>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="v : ${variants}">
+            <td th:text="${v.title}"></td>
+            <td th:text="${v.option1}"></td>
+            <td th:text="${v.option2}"></td>
+            <td th:text="${v.option3}"></td>
+            <td th:text="${v.available}"></td>
+            <td th:text="${v.price}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

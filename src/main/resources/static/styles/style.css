@@ -1,0 +1,49 @@
+body {
+    background: var(--wa-color-gray-95);
+    padding: var(--wa-space-xl);
+}
+
+h1 {
+    margin-bottom: var(--wa-space-l);
+}
+
+.container {
+    max-width: 80%;
+    margin: auto;
+}
+
+.card {
+    background: white;
+    padding: var(--wa-space-l);
+    border-radius: var(--wa-space-s);
+    box-shadow: var(--wa-color-shadow);
+    margin-bottom: var(--wa-space-l);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    background: var(--wa-color-gray-70);
+}
+
+th, td {
+    padding: var(--wa-space-s);
+    border-bottom: var(--wa-color-surface-border);
+    text-align: left;
+}
+
+tr:hover {
+    background: var(--wa-color-gray-90);
+    cursor: pointer;
+}
+
+input {
+    padding: var(--wa-space-xs);
+    margin-right: var(--wa-space-s);
+    border-radius: var(--wa-space-2xs);
+    border: var(--wa-color-surface-border);
+}
+

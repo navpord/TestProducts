@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title th:text="#{appTitle}"></title>
+    <script defer src="https://cdn.jsdelivr.net/npm/htmx.org@next"></script>
+    <script src="https://kit.webawesome.com/fa40be0272df44a5.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" th:href="@{/styles/style.css}">
+</head>
+
+<body>
+
+<div class="container">
+    <h1 th:text="#{dashboardTitle}"></h1>
+    <div class="card">
+        <wa-button
+                class="wa-button wa-primary"
+                size="medium"
+                style="width: 100%"
+                variant="brand"
+                hx-get="/products"
+                hx-target="#table-container"
+                hx-swap="innerHTML"
+                hx-on:htmx:after:request="document.getElementById('form-container').style.display='block'">
+            <wa-icon slot="start" name="sync"></wa-icon>
+            <span th:text="#{loadProducts}"></span>
+        </wa-button>
+    </div>
+
+    <div id="form-container" style="display:none;" class="card">
+        <h3 th:text="#{addProduct}"></h3>
+        <form
+                id="product-form"
+                hx-post="/products"
+                hx-target="#table-container"
+                hx-swap="innerHTML"
+                hx-on:htmx:after:request="this.reset()"
+                style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+
+            <wa-input style="flex:1; min-width: 200px;"
+                      name="title"
+                      placeholder="Title"
+                      with-clear
+            >
+                <wa-icon name="tag" slot="start"></wa-icon>
+            </wa-input>
+
+            <wa-input style="flex:1; min-width: 200px;"
+                      name="vendor"
+                      placeholder="Vendor"
+                      with-clear
+            >
+                <wa-icon name="shop" slot="start"></wa-icon>
+            </wa-input>
+
+            <wa-input style="flex:1; min-width: 200px;"
+                      name="productType"
+                      placeholder="Type"
+                      with-clear
+            >
+            </wa-input>
+
+            <div style="flex: 0 0 100%; display: flex; justify-content: flex-end; margin-top: 10px;">
+                <wa-button style="width: 100%" variant="success" class="wa-button wa-success" type="submit">
+                    <span th:text="#{add}"></span>
+                </wa-button>
+            </div>
+
+        </form>
+    </div>
+
+    <div class="card">
+        <div id="table-container">
+            <p th:text="#{loadDataMessage}"></p>
+        </div>
+    </div>
+
+</div>
+
+<wa-dialog label="Variants" id="variant-dialog" style="--width:40%">
+    <div class="dialog-content">
+        <div id="dialog-body"></div>
+
+        <wa-button class="wa-button"
+                   size="medium"
+                   style="width: 100%"
+                   slot="footer" variant="brand" data-dialog="close">
+            <span th:text="#{close}"></span>
+        </wa-button>
+    </div>
+</wa-dialog>
+
+<script>
+    function openDialog() {
+        document.getElementById('variant-dialog').show();
+    }
+</script>
+</body>
+</html>
