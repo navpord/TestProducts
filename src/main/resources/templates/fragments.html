@@ -16,6 +16,7 @@
             <th th:text="#{title}"/>
             <th th:text="#{vendor}"/>
             <th th:text="#{type}"/>
+            <th th:text="#{actions}"></th>
         </tr>
         </thead>
 
@@ -30,6 +31,15 @@
             <td th:text="${p.title}"></td>
             <td th:text="${p.vendor}"></td>
             <td th:text="${p.productType}"></td>
+            <td onclick="event.stopPropagation()" style="width: 1%; white-space: nowrap;">
+                <wa-button
+                        size="small"
+                        variant="neutral"
+                        th:href="@{/products/{id}/edit(id=${p.id})}">
+                    <wa-icon slot="start" name="pen-to-square"></wa-icon>
+                    <span th:text="#{edit}"></span>
+                </wa-button>
+            </td>
         </tr>
         </tbody>
 

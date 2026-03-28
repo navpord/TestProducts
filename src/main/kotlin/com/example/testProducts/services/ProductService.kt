@@ -80,4 +80,24 @@ class ProductService(
             ?: throw RuntimeException("Product not found")
         return  product.variants
     }
+
+    fun getProduct(id: Long): Product? {
+        return productRepository.findById(id)
+    }
+
+    fun updateProduct(
+        id: Long,
+        title: String,
+        vendor: String,
+        productType: String
+    ) {
+        val existing = productRepository.findById(id)
+            ?: throw IllegalArgumentException("Product not found")
+        productRepository.update(
+            existing.id!!,
+            title.trim(),
+            vendor.trim(),
+            productType.trim()
+        )
+    }
 }

@@ -119,6 +119,19 @@ class ProductRepository(
         }
     }
 
+    fun update(id: Int, title: String?, vendor: String?, productType: String?) {
+        jdbcClient
+            .sql(
+                """
+                UPDATE products
+                SET title = ?, vendor = ?, product_type = ?
+                WHERE id = ?
+                """.trimIndent()
+            )
+            .params(listOf(title, vendor, productType, id))
+            .update()
+    }
+
     fun findById(id: Long): Product? {
 
         val product = jdbcClient

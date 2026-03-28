@@ -1,9 +1,11 @@
 package com.example.testProducts.controllers
 
 import com.example.testProducts.services.ProductService
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.server.ResponseStatusException
 
 @Controller
 class ProductController(
@@ -46,6 +48,29 @@ class ProductController(
 
         model.addAttribute("products", productService.addProduct(title, vendor, productType))
         return "fragments :: productTable"
+    }
+
+    @GetMapping("/products/{id}/edit")
+    fun editProductPage(@PathVariable id: Long, model: Model): String {
+        val product = productService.getProduct(id)
+            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND)
+        model.addAttribute("product", product)
+        return "edit"
+    }
+
+    @PostMapping("/products/{id}")
+    fun updateProduct(
+        @PathVariable id: Long,
+        @RequestParam title: String,
+        @RequestParam vendor: String,
+        @RequestParam productType: String
+    ): String {
+        try {
+            productService.updateProduct(id, title, vendor, productType)
+        } catch (_: IllegalArgumentException) {
+            throw ResponseStatusException(HttpStatus.NOT_FOUND)
+        }
+        return "redirect:/"
     }
 
     @GetMapping("/products/{id}/variants")

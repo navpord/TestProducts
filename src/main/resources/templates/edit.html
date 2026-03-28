@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title th:text="|#{editPageTitle} - #{appTitle}|"></title>
+    <th:block th:replace="fragments :: libs"/>
+</head>
+<body>
+
+<div class="container">
+    <nav class="app-nav" style="margin-bottom: var(--wa-space-m); display: flex; gap: var(--wa-space-s); flex-wrap: wrap;">
+        <wa-button appearance="plain" size="small" th:href="@{/}">
+            <wa-icon slot="start" name="house"></wa-icon>
+            <span th:text="#{navHome}"></span>
+        </wa-button>
+        <wa-button appearance="plain" size="small" th:href="@{/search}">
+            <wa-icon slot="start" name="magnifying-glass"></wa-icon>
+            <span th:text="#{navSearch}"></span>
+        </wa-button>
+    </nav>
+
+    <h1 th:text="#{editPageTitle}"></h1>
+
+    <div class="card">
+        <form
+                th:action="@{/products/{id}(id=${product.id})}"
+                method="post"
+                style="display: flex; flex-direction: column; gap: var(--wa-space-m); max-width: 32rem;">
+
+            <wa-input
+                    name="title"
+                    th:value="${product.title}"
+                    th:label="#{title}"
+                    with-clear
+                    required
+                    style="width: 100%;">
+                <wa-icon name="tag" slot="start"></wa-icon>
+            </wa-input>
+
+
+            <wa-input
+                    name="vendor"
+                    th:value="${product.vendor}"
+                    th:label="#{vendor}"
+                    with-clear
+                    style="width: 100%;">
+                <wa-icon name="shop" slot="start"></wa-icon>
+            </wa-input>
+
+            <wa-input
+                    name="productType"
+                    th:value="${product.productType}"
+                    th:label="#{type}"
+                    with-clear
+                    style="width: 100%;">
+            </wa-input>
+
+            <div style="display: flex; flex-wrap: wrap; gap: var(--wa-space-s); margin-top: var(--wa-space-s);">
+                <wa-button type="submit" variant="brand" class="wa-button wa-primary">
+                    <wa-icon slot="start" name="floppy-disk"></wa-icon>
+                    <span th:text="#{saveChanges}"></span>
+                </wa-button>
+                <wa-button appearance="plain" th:href="@{/}" type="button">
+                    <span th:text="#{backToDashboard}"></span>
+                </wa-button>
+            </div>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>
