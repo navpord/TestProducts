@@ -39,3 +39,4 @@ out/
 ### Kotlin ###
 .kotlin
 /package-lock.json
+/node_modules/
