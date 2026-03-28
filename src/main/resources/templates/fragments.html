@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <body>
+<th:block th:fragment="libs">
+    <script defer src="https://cdn.jsdelivr.net/npm/htmx.org@next"></script>
+    <script src="https://kit.webawesome.com/fa40be0272df44a5.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" th:href="@{/styles/style.css}">
+</th:block>
 
 <div th:fragment="productTable">
 

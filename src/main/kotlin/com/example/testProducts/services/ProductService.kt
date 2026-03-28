@@ -50,6 +50,15 @@ class ProductService(
         return productRepository.findAll()
     }
 
+    fun searchProductsByTitle(query: String?): List<Product> {
+        val q = query?.trim().orEmpty()
+        return if (q.isEmpty()) {
+            productRepository.findAll()
+        } else {
+            productRepository.findByTitleContaining(q)
+        }
+    }
+
     fun addProduct(
         title: String,
         vendor: String,

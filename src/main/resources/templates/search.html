@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title th:text="|#{searchPageTitle} — #{appTitle}|"></title>
+    <th:block th:replace="fragments :: libs"/>
+</head>
+<body>
+
+<div class="container">
+    <nav class="app-nav" style="margin-bottom: var(--wa-space-m); display: flex; gap: var(--wa-space-s); flex-wrap: wrap;">
+        <wa-button appearance="plain" size="small" th:href="@{/}">
+            <wa-icon slot="start" name="house"></wa-icon>
+            <span th:text="#{navHome}"></span>
+        </wa-button>
+        <wa-button appearance="plain" size="small" th:href="@{/search}">
+            <wa-icon slot="start" name="magnifying-glass"></wa-icon>
+            <span th:text="#{navSearch}"></span>
+        </wa-button>
+    </nav>
+
+    <h1 th:text="#{searchPageTitle}"></h1>
+
+    <div class="card">
+        <form
+                id="product-search-form"
+                hx-get="/products/search"
+                hx-target="#search-table-container"
+                hx-swap="innerHTML"
+                hx-trigger="input delay:300ms from:#search-q, submit"
+                hx-include="#search-q"
+                style="margin-bottom: var(--wa-space-s);">
+            <wa-input
+                    id="search-q"
+                    name="q"
+                    style="width: 100%"
+                    th:placeholder="#{searchPlaceholder}"
+                    with-clear
+                    type="search"
+                    autocomplete="off"
+            >
+                <wa-icon name="magnifying-glass" slot="start"></wa-icon>
+            </wa-input>
+        </form>
+
+        <div id="search-table-container">
+            <div th:replace="~{fragments :: productTable}"></div>
+        </div>
+    </div>
+</div>
+
+<wa-dialog label="Variants" id="variant-dialog" style="--width:40%">
+    <div class="dialog-content">
+        <div id="dialog-body"></div>
+
+        <wa-button class="wa-button"
+                   size="medium"
+                   style="width: 100%"
+                   slot="footer" variant="brand" data-dialog="close">
+            <span th:text="#{close}"></span>
+        </wa-button>
+    </div>
+</wa-dialog>
+
+<script>
+    function openDialog() {
+        document.getElementById('variant-dialog').show();
+    }
+</script>
+</body>
+</html>

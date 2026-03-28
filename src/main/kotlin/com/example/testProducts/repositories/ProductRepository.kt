@@ -80,12 +80,34 @@ class ProductRepository(
     }
 
     fun findAll(): List<Product> {
-
         val products = jdbcClient
-            .sql("SELECT * FROM products")
+            .sql("SELECT * FROM products ORDER BY id")
             .query(productRowMapper)
             .list()
 
+        attachVariants(products)
+        return products
+    }
+
+    fun findByTitleContaining(needle: String): List<Product> {
+        val term = needle.trim()
+        val products = jdbcClient
+            .sql(
+                """
+                SELECT * FROM products
+                WHERE strpos(lower(title), lower(?)) > 0
+                ORDER BY id
+                """.trimIndent()
+            )
+            .params(term)
+            .query(productRowMapper)
+            .list()
+
+        attachVariants(products)
+        return products
+    }
+
+    private fun attachVariants(products: List<Product>) {
         products.forEach { product ->
             val variants = jdbcClient
                 .sql("SELECT * FROM variants WHERE product_id = ?")
@@ -95,8 +117,6 @@ class ProductRepository(
 
             product.variants.addAll(variants)
         }
-
-        return products
     }
 
     fun findById(id: Long): Product? {

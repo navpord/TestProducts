@@ -2,14 +2,22 @@
 <html lang="en">
 <head>
     <title th:text="#{appTitle}"></title>
-    <script defer src="https://cdn.jsdelivr.net/npm/htmx.org@next"></script>
-    <script src="https://kit.webawesome.com/fa40be0272df44a5.js" crossorigin="anonymous"></script>
-    <link rel="stylesheet" th:href="@{/styles/style.css}">
+   <th:block th:replace="fragments :: libs"/>
 </head>
 
 <body>
 
 <div class="container">
+    <nav class="app-nav" style="margin-bottom: var(--wa-space-m); display: flex; gap: var(--wa-space-s); flex-wrap: wrap;">
+        <wa-button appearance="plain" size="small" th:href="@{/}">
+            <wa-icon slot="start" name="house"></wa-icon>
+            <span th:text="#{navHome}"></span>
+        </wa-button>
+        <wa-button appearance="plain" size="small" th:href="@{/search}">
+            <wa-icon slot="start" name="magnifying-glass"></wa-icon>
+            <span th:text="#{navSearch}"></span>
+        </wa-button>
+    </nav>
     <h1 th:text="#{dashboardTitle}"></h1>
     <div class="card">
         <wa-button

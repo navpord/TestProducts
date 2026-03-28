@@ -15,6 +15,21 @@ class ProductController(
         return "index"
     }
 
+    @GetMapping("/search")
+    fun searchPage(model: Model): String {
+        model.addAttribute("products", productService.getProducts())
+        return "search"
+    }
+
+    @GetMapping("/products/search")
+    fun searchProducts(
+        @RequestParam(name = "q", required = false) q: String?,
+        model: Model
+    ): String {
+        model.addAttribute("products", productService.searchProductsByTitle(q))
+        return "fragments :: productTable"
+    }
+
     @GetMapping("/products")
     fun getProducts(model: Model): String {
         model.addAttribute("products", productService.getProducts())
