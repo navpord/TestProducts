@@ -32,13 +32,26 @@
             <td th:text="${p.vendor}"></td>
             <td th:text="${p.productType}"></td>
             <td onclick="event.stopPropagation()" style="width: 1%; white-space: nowrap;">
-                <wa-button
-                        size="small"
-                        variant="neutral"
-                        th:href="@{/products/{id}/edit(id=${p.id})}">
-                    <wa-icon slot="start" name="pen-to-square"></wa-icon>
-                    <span th:text="#{edit}"></span>
-                </wa-button>
+                <div style="display: inline-flex; align-items: center; gap: 6px; flex-wrap: nowrap;">
+                    <wa-button
+                            size="small"
+                            variant="neutral"
+                            th:href="@{/products/{id}/edit(id=${p.id})}">
+                        <wa-icon slot="start" name="pen-to-square"></wa-icon>
+                        <span th:text="#{edit}"></span>
+                    </wa-button>
+
+                    <wa-button
+                            type="button"
+                            size="small"
+                            variant="danger"
+                            th:data-product-id="${p.id}"
+                            th:data-product-title="${p.title}"
+                            onclick="openDeleteProductDialog(this)">
+                        <wa-icon slot="start" name="trash"></wa-icon>
+                        <span th:text="#{deleteAction}"></span>
+                    </wa-button>
+                </div>
             </td>
         </tr>
         </tbody>
@@ -79,5 +92,56 @@
         </tbody>
     </table>
 </div>
+
+<th:block th:fragment="deleteProductDialog">
+    <dialog id="delete-product-dialog" class="delete-product-dialog">
+        <h3 style="margin-top: 0;" th:text="#{deleteDialogTitle}"></h3>
+        <p style="margin-bottom: var(--wa-space-l);">
+            <span th:text="#{deleteDialogLead}"></span>
+            <strong id="delete-product-title"></strong>
+            <span th:text="#{deleteDialogTrail}"></span>
+        </p>
+        <div class="delete-product-dialog-actions">
+            <button type="button" class="delete-dialog-btn delete-dialog-btn-cancel" id="delete-product-cancel"
+                    th:text="#{cancelAction}"></button>
+            <button type="button" class="delete-dialog-btn delete-dialog-btn-confirm" id="delete-product-confirm"
+                    th:text="#{confirmDeleteAction}"></button>
+        </div>
+    </dialog>
+    <script>
+        function getProductTableContainerSelector() {
+            if (document.getElementById('search-table-container')) {
+                return '#search-table-container';
+            }
+            return '#table-container';
+        }
+
+        function openDeleteProductDialog(el) {
+            const id = el.dataset.productId;
+            const title = el.dataset.productTitle || '';
+            document.getElementById('delete-product-title').textContent = title;
+            const dlg = document.getElementById('delete-product-dialog');
+            dlg.dataset.productId = id;
+            dlg.showModal();
+        }
+
+        (function () {
+            const dlg = document.getElementById('delete-product-dialog');
+            document.getElementById('delete-product-cancel').addEventListener('click', function () {
+                dlg.close();
+            });
+            document.getElementById('delete-product-confirm').addEventListener('click', function () {
+                const id = dlg.dataset.productId;
+                let url = '/products/' + id + '/delete';
+                const qInput = document.getElementById('search-q');
+                if (qInput && qInput.value && qInput.value.trim() !== '') {
+                    url += '?q=' + encodeURIComponent(qInput.value);
+                }
+                htmx.ajax('POST', url, {target: getProductTableContainerSelector(), swap: 'innerHTML'});
+                dlg.close();
+            });
+        })();
+    </script>
+</th:block>
 </body>
 </html>

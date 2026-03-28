@@ -47,3 +47,45 @@ input {
     border: var(--wa-color-surface-border);
 }
 
+.delete-product-dialog {
+    border: none;
+    border-radius: var(--wa-space-s);
+    padding: var(--wa-space-l);
+    max-width: min(28rem, 100vw - 2rem);
+    box-shadow: var(--wa-color-shadow);
+}
+
+.delete-product-dialog::backdrop {
+    background: rgba(0, 0, 0, 0.45);
+}
+
+.delete-product-dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--wa-space-s);
+    flex-wrap: wrap;
+}
+
+.delete-dialog-btn {
+    font: inherit;
+    padding: var(--wa-space-xs) var(--wa-space-m);
+    border-radius: var(--wa-space-2xs);
+    cursor: pointer;
+    border: var(--wa-color-surface-border);
+    background: var(--wa-color-gray-60);
+}
+
+.delete-dialog-btn-cancel:hover {
+    background: var(--wa-color-gray-40);
+}
+
+.delete-dialog-btn-confirm {
+    border-color: var(--wa-color-red-40);
+    background: var(--wa-color-red-50);
+    color: #fff;
+}
+
+.delete-dialog-btn-confirm:hover {
+    filter: brightness(1.05);
+}
+

@@ -100,4 +100,10 @@ class ProductService(
             productType.trim()
         )
     }
+
+    fun deleteProduct(id: Long) {
+        val existing = productRepository.findById(id)
+            ?: throw IllegalArgumentException("Product not found")
+        productRepository.deleteById(existing.id!!)
+    }
 }

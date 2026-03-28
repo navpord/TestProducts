@@ -73,6 +73,21 @@ class ProductController(
         return "redirect:/"
     }
 
+    @PostMapping("/products/{id}/delete")
+    fun deleteProduct(
+        @PathVariable id: Long,
+        @RequestParam(name = "q", required = false) q: String?,
+        model: Model
+    ): String {
+        try {
+            productService.deleteProduct(id)
+        } catch (_: IllegalArgumentException) {
+            throw ResponseStatusException(HttpStatus.NOT_FOUND)
+        }
+        model.addAttribute("products", productService.searchProductsByTitle(q))
+        return "fragments :: productTable"
+    }
+
     @GetMapping("/products/{id}/variants")
     fun getVariants(
         @PathVariable id: Long,

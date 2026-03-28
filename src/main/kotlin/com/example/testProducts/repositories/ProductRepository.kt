@@ -132,6 +132,13 @@ class ProductRepository(
             .update()
     }
 
+    fun deleteById(id: Int) {
+        jdbcClient
+            .sql("DELETE FROM products WHERE id = ?")
+            .params(id)
+            .update()
+    }
+
     fun findById(id: Long): Product? {
 
         val product = jdbcClient

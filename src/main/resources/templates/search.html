@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
-    <title th:text="|#{searchPageTitle} — #{appTitle}|"></title>
+    <title th:text="|#{searchPageTitle} - #{appTitle}|"></title>
     <th:block th:replace="fragments :: libs"/>
 </head>
 <body>
@@ -60,6 +60,8 @@
         </wa-button>
     </div>
 </wa-dialog>
+
+<th:block th:replace="fragments :: deleteProductDialog"/>
 
 <script>
     function openDialog() {
