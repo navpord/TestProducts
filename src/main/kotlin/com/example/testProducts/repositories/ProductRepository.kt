@@ -39,6 +39,20 @@ class ProductRepository(
             .single()
     }
 
+    fun countByTitleContaining(needle: String): Int {
+        val term = needle.trim()
+        return jdbcClient
+            .sql(
+                """
+                SELECT COUNT(*) FROM products
+                WHERE strpos(lower(title), lower(?)) > 0
+                """.trimIndent()
+            )
+            .params(term)
+            .query(Int::class.java)
+            .single()
+    }
+
     fun saveAll(products: List<Product>) {
         products.forEach { save(it) }
     }
@@ -89,6 +103,17 @@ class ProductRepository(
         return products
     }
 
+    fun findAllPaged(offset: Int, limit: Int): List<Product> {
+        val products = jdbcClient
+            .sql("SELECT * FROM products ORDER BY id LIMIT ? OFFSET ?")
+            .params(listOf(limit, offset))
+            .query(productRowMapper)
+            .list()
+
+        attachVariants(products)
+        return products
+    }
+
     fun findByTitleContaining(needle: String): List<Product> {
         val term = needle.trim()
         val products = jdbcClient
@@ -100,6 +125,25 @@ class ProductRepository(
                 """.trimIndent()
             )
             .params(term)
+            .query(productRowMapper)
+            .list()
+
+        attachVariants(products)
+        return products
+    }
+
+    fun findByTitleContainingPaged(needle: String, offset: Int, limit: Int): List<Product> {
+        val term = needle.trim()
+        val products = jdbcClient
+            .sql(
+                """
+                SELECT * FROM products
+                WHERE strpos(lower(title), lower(?)) > 0
+                ORDER BY id
+                LIMIT ? OFFSET ?
+                """.trimIndent()
+            )
+            .params(listOf(term, limit, offset))
             .query(productRowMapper)
             .list()
 

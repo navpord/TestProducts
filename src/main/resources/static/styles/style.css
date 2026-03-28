@@ -89,3 +89,26 @@ input {
     filter: brightness(1.05);
 }
 
+.product-table-fragment {
+    display: flex;
+    flex-direction: column;
+    gap: var(--wa-space-m);
+}
+
+.product-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: var(--wa-space-m);
+    padding-top: var(--wa-space-s);
+    border-top: 1px solid var(--wa-color-surface-border);
+}
+
+.product-pagination-status {
+    font-size: var(--wa-font-size-s);
+    color: var(--wa-color-gray-30);
+    min-width: 6rem;
+    text-align: center;
+}
+

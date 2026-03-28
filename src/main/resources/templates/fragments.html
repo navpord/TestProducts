@@ -7,7 +7,7 @@
     <link rel="stylesheet" th:href="@{/styles/style.css}">
 </th:block>
 
-<div th:fragment="productTable">
+<div th:fragment="productTable" class="product-table-fragment" th:attr="data-current-page=${currentPage}">
 
     <table>
         <thead>
@@ -27,7 +27,7 @@
             hx-swap="innerHTML"
             hx-on:htmx:after:request="openDialog()">
 
-            <td th:text="${stat.count}"></td>
+            <td th:text="${(currentPage - 1) * pageSize + stat.count}"></td>
             <td th:text="${p.title}"></td>
             <td th:text="${p.vendor}"></td>
             <td th:text="${p.productType}"></td>
@@ -57,6 +57,56 @@
         </tbody>
 
     </table>
+
+    <div class="product-pagination" th:if="${totalItems > 0}">
+        <th:block th:if="${paginationSearch}">
+            <wa-button type="button" size="small" variant="neutral"
+                       th:if="${currentPage > 1}"
+                       th:attr="hx-get=@{/products/search(q=${searchQuery},page=${currentPage - 1})}, hx-target=${paginationHxTarget}, hx-swap=innerHTML">
+                <span th:text="#{paginationPrevious}"></span>
+            </wa-button>
+            <wa-button type="button" size="small" variant="neutral" disabled
+                       th:if="${currentPage <= 1}">
+                <span th:text="#{paginationPrevious}"></span>
+            </wa-button>
+
+            <span class="product-pagination-status" th:text="|${currentPage} of ${totalPages}|"></span>
+
+            <wa-button type="button" size="small" variant="neutral"
+                       th:if="${currentPage < totalPages}"
+                       th:attr="hx-get=@{/products/search(q=${searchQuery},page=${currentPage + 1})}, hx-target=${paginationHxTarget}, hx-swap=innerHTML">
+                <span th:text="#{paginationNext}"></span>
+            </wa-button>
+            <wa-button type="button" size="small" variant="neutral" disabled
+                       th:if="${currentPage >= totalPages}">
+                <span th:text="#{paginationNext}"></span>
+            </wa-button>
+        </th:block>
+
+        <th:block th:unless="${paginationSearch}">
+            <wa-button type="button" size="small" variant="neutral"
+                       th:if="${currentPage > 1}"
+                       th:attr="hx-get=@{/products(page=${currentPage - 1})}, hx-target=${paginationHxTarget}, hx-swap=innerHTML">
+                <span th:text="#{paginationPrevious}"></span>
+            </wa-button>
+            <wa-button type="button" size="small" variant="neutral" disabled
+                       th:if="${currentPage <= 1}">
+                <span th:text="#{paginationPrevious}"></span>
+            </wa-button>
+
+            <span class="product-pagination-status" th:text="|${currentPage} of ${totalPages}|"></span>
+
+            <wa-button type="button" size="small" variant="neutral"
+                       th:if="${currentPage < totalPages}"
+                       th:attr="hx-get=@{/products(page=${currentPage + 1})}, hx-target=${paginationHxTarget}, hx-swap=innerHTML">
+                <span th:text="#{paginationNext}"></span>
+            </wa-button>
+            <wa-button type="button" size="small" variant="neutral" disabled
+                       th:if="${currentPage >= totalPages}">
+                <span th:text="#{paginationNext}"></span>
+            </wa-button>
+        </th:block>
+    </div>
 
 </div>
 
@@ -132,11 +182,19 @@
             });
             document.getElementById('delete-product-confirm').addEventListener('click', function () {
                 const id = dlg.dataset.productId;
-                let url = '/products/' + id + '/delete';
+                const wrap = document.querySelector('.product-table-fragment');
+                const page = wrap && wrap.dataset.currentPage ? wrap.dataset.currentPage : '1';
+                const params = new URLSearchParams();
+                params.set('page', page);
+                const fromSearch = document.getElementById('search-table-container') !== null;
+                if (fromSearch) {
+                    params.set('fromSearch', 'true');
+                }
                 const qInput = document.getElementById('search-q');
                 if (qInput && qInput.value && qInput.value.trim() !== '') {
-                    url += '?q=' + encodeURIComponent(qInput.value);
+                    params.set('q', qInput.value.trim());
                 }
+                const url = '/products/' + id + '/delete?' + params.toString();
                 htmx.ajax('POST', url, {target: getProductTableContainerSelector(), swap: 'innerHTML'});
                 dlg.close();
             });

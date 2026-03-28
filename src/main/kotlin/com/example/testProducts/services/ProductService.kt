@@ -2,6 +2,7 @@ package com.example.testProducts.services
 
 import com.example.testProducts.dto.ProductResponse
 import com.example.testProducts.models.Product
+import com.example.testProducts.models.ProductPage
 import com.example.testProducts.models.Variant
 import com.example.testProducts.repositories.ProductRepository
 import org.springframework.stereotype.Service
@@ -13,6 +14,10 @@ import java.math.BigDecimal
 class ProductService(
     private val productRepository: ProductRepository
 ) {
+
+    companion object {
+        const val PAGE_SIZE = 5
+    }
 
     private val restClient = RestClient.create("https://famme.no/products.json")
 
@@ -46,25 +51,48 @@ class ProductService(
         productRepository.saveAll(entities)
     }
 
-    fun getProducts(): List<Product> {
-        return productRepository.findAll()
-    }
-
-    fun searchProductsByTitle(query: String?): List<Product> {
+    fun getProductsPage(page: Int, query: String?): ProductPage {
         val q = query?.trim().orEmpty()
-        return if (q.isEmpty()) {
-            productRepository.findAll()
+        val totalItems = if (q.isEmpty()) {
+            productRepository.count()
         } else {
-            productRepository.findByTitleContaining(q)
+            productRepository.countByTitleContaining(q)
         }
+
+        val totalPages = if (totalItems == 0) {
+            0
+        } else {
+            (totalItems + PAGE_SIZE - 1) / PAGE_SIZE
+        }
+
+        val safePage = when {
+            totalItems == 0 -> 1
+            else -> page.coerceIn(1, totalPages)
+        }
+
+        val offset = (safePage - 1) * PAGE_SIZE
+        val items = if (totalItems == 0) {
+            emptyList()
+        } else if (q.isEmpty()) {
+            productRepository.findAllPaged(offset, PAGE_SIZE)
+        } else {
+            productRepository.findByTitleContainingPaged(q, offset, PAGE_SIZE)
+        }
+
+        return ProductPage(
+            items = items,
+            currentPage = safePage,
+            totalPages = totalPages,
+            totalItems = totalItems,
+            pageSize = PAGE_SIZE
+        )
     }
 
     fun addProduct(
         title: String,
         vendor: String,
         productType: String
-    ): List<Product> {
-
+    ) {
         val product = Product(
             title = title,
             vendor = vendor,
@@ -72,7 +100,6 @@ class ProductService(
         )
 
         productRepository.save(product)
-        return productRepository.findAll()
     }
 
     fun getVariants(id: Long): MutableList<Variant> {

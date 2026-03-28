@@ -19,22 +19,44 @@ class ProductController(
 
     @GetMapping("/search")
     fun searchPage(model: Model): String {
-        model.addAttribute("products", productService.getProducts())
+        populateProductTableModel(
+            model = model,
+            page = 1,
+            q = null,
+            paginationHxTarget = "#search-table-container",
+            paginationSearch = true
+        )
         return "search"
     }
 
     @GetMapping("/products/search")
     fun searchProducts(
         @RequestParam(name = "q", required = false) q: String?,
+        @RequestParam(defaultValue = "1") page: Int,
         model: Model
     ): String {
-        model.addAttribute("products", productService.searchProductsByTitle(q))
+        populateProductTableModel(
+            model = model,
+            page = page,
+            q = q,
+            paginationHxTarget = "#search-table-container",
+            paginationSearch = true
+        )
         return "fragments :: productTable"
     }
 
     @GetMapping("/products")
-    fun getProducts(model: Model): String {
-        model.addAttribute("products", productService.getProducts())
+    fun getProducts(
+        @RequestParam(defaultValue = "1") page: Int,
+        model: Model
+    ): String {
+        populateProductTableModel(
+            model = model,
+            page = page,
+            q = null,
+            paginationHxTarget = "#table-container",
+            paginationSearch = false
+        )
         return "fragments :: productTable"
     }
 
@@ -45,8 +67,14 @@ class ProductController(
         @RequestParam productType: String,
         model: Model
     ): String {
-
-        model.addAttribute("products", productService.addProduct(title, vendor, productType))
+        productService.addProduct(title, vendor, productType)
+        populateProductTableModel(
+            model = model,
+            page = 1,
+            q = null,
+            paginationHxTarget = "#table-container",
+            paginationSearch = false
+        )
         return "fragments :: productTable"
     }
 
@@ -77,6 +105,8 @@ class ProductController(
     fun deleteProduct(
         @PathVariable id: Long,
         @RequestParam(name = "q", required = false) q: String?,
+        @RequestParam(defaultValue = "1") page: Int,
+        @RequestParam(defaultValue = "false") fromSearch: Boolean,
         model: Model
     ): String {
         try {
@@ -84,7 +114,14 @@ class ProductController(
         } catch (_: IllegalArgumentException) {
             throw ResponseStatusException(HttpStatus.NOT_FOUND)
         }
-        model.addAttribute("products", productService.searchProductsByTitle(q))
+        val target = if (fromSearch) "#search-table-container" else "#table-container"
+        populateProductTableModel(
+            model = model,
+            page = page,
+            q = q,
+            paginationHxTarget = target,
+            paginationSearch = fromSearch
+        )
         return "fragments :: productTable"
     }
 
@@ -95,5 +132,23 @@ class ProductController(
     ): String {
         model.addAttribute("variants", productService.getVariants(id))
         return "fragments :: variantDialogContent"
+    }
+
+    private fun populateProductTableModel(
+        model: Model,
+        page: Int,
+        q: String?,
+        paginationHxTarget: String,
+        paginationSearch: Boolean
+    ) {
+        val result = productService.getProductsPage(page, q)
+        model.addAttribute("products", result.items)
+        model.addAttribute("currentPage", result.currentPage)
+        model.addAttribute("totalPages", result.totalPages)
+        model.addAttribute("totalItems", result.totalItems)
+        model.addAttribute("pageSize", result.pageSize)
+        model.addAttribute("paginationHxTarget", paginationHxTarget)
+        model.addAttribute("paginationSearch", paginationSearch)
+        model.addAttribute("searchQuery", q?.trim().orEmpty())
     }
 }
